@@ -97,3 +97,66 @@ window.addEventListener('resize', () => {
     }
   }
 });
+
+// FAQ Accordion functionality
+document.addEventListener('DOMContentLoaded', function() {
+  const faqHeaders = document.querySelectorAll('.faq-header');
+  
+  faqHeaders.forEach(header => {
+    header.addEventListener('click', () => {
+      const faqItem = header.parentElement;
+      const faqContent = header.nextElementSibling;
+      const icon = header.querySelector('svg');
+      
+      // Toggle the active class on the faq-item
+      faqItem.classList.toggle('active');
+      
+      // Toggle the content visibility
+      if (faqItem.classList.contains('active')) {
+        faqContent.style.maxHeight = faqContent.scrollHeight + 'px';
+        icon.style.transform = 'rotate(180deg)';
+      } else {
+        faqContent.style.maxHeight = '0';
+        icon.style.transform = 'rotate(0deg)';
+      }
+      
+      // Close other open items
+      document.querySelectorAll('.faq-item').forEach(item => {
+        if (item !== faqItem && item.classList.contains('active')) {
+          item.classList.remove('active');
+          item.querySelector('.faq-content').style.maxHeight = '0';
+          item.querySelector('svg').style.transform = 'rotate(0deg)';
+        }
+      });
+    });
+  });
+});
+
+// Testimonial Slider functionality
+document.addEventListener('DOMContentLoaded', function() {
+  const testimonials = document.querySelectorAll('.testimonial');
+  const prevBtn = document.getElementById('prev-testimonial');
+  const nextBtn = document.getElementById('next-testimonial');
+  let currentIndex = 0;
+
+  // Show initial testimonial
+  showTestimonial(currentIndex);
+
+  // Next testimonial
+  nextBtn.addEventListener('click', () => {
+    currentIndex = (currentIndex + 1) % testimonials.length;
+    showTestimonial(currentIndex);
+  });
+
+  // Previous testimonial
+  prevBtn.addEventListener('click', () => {
+    currentIndex = (currentIndex - 1 + testimonials.length) % testimonials.length;
+    showTestimonial(currentIndex);
+  });
+
+  function showTestimonial(index) {
+    testimonials.forEach((testimonial, i) => {
+      testimonial.classList.toggle('active', i === index);
+    });
+  }
+});
