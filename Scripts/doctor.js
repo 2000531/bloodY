@@ -85,9 +85,11 @@ async function fetchDonors() {
 }
 
 // Fetch a single donor by ID
+// Fetch a single donor by ID
 async function fetchDonorById(id) {
   try {
-    const response = await fetch(`${API_BASE_URL}/latest/${id}`, {
+    // 1. First fetch the entire bin
+    const response = await fetch(`${API_BASE_URL}/latest`, {
       headers: {
         'X-Master-Key': API_KEY
       }
@@ -97,13 +99,22 @@ async function fetchDonorById(id) {
       throw new Error(`HTTP error! Status: ${response.status}`);
     }
     
-    return await response.json();
+    // 2. Get the complete data
+    const { record } = await response.json();
+    
+    // 3. Find the donor by ID in the donors array
+    const foundDonor = record.donors.find(donor => donor.id == id); // Use == for loose comparison
+    
+    if (!foundDonor) {
+      throw new Error(`Donor with ID ${id} not found`);
+    }
+    
+    return foundDonor;
   } catch (error) {
     console.error(`Error fetching donor with ID ${id}:`, error);
     return null;
   }
 }
-
 // Fetch donors by blood type
 async function fetchDonorsByBloodType(bloodType) {
   try {
