@@ -1,5 +1,7 @@
 // API base URL - change this to your json-server URL
-const API_BASE_URL = 'http://localhost:3000';
+const BIN_ID = '67e689e68a456b79667e534c';
+const API_KEY = '$2a$10$vvG4aV/MVldkC/BJks0nXufnzwRVo6546Suwy/jrN3FXuLfLwsWNq';
+const API_BASE_URL = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
 
 // Form validation and submission
 const form = document.getElementById('registration-form');
@@ -22,15 +24,63 @@ if (fileUpload && fileName) {
   });
 }
 
-// Create a new donor
+// Initialize the bin with proper structure if empty
+async function initializeBin() {
+  try {
+    const response = await fetch(`${API_BASE_URL}/latest`, {
+      headers: { 'X-Master-Key': API_KEY }
+    });
+    
+    // If bin doesn't exist or is empty, create it
+    if (response.status === 404) {
+      await fetch(API_BASE_URL, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Master-Key': API_KEY
+        },
+        body: JSON.stringify({
+          donors: [],
+          bloodRequests: []
+        })
+      });
+    }
+  } catch (error) {
+    console.error('Error initializing bin:', error);
+  }
+}
+
+// Call this when your app loads
+initializeBin();
+
+// Create a new donor - CORRECTED VERSION
 async function createDonor(donorData) {
   try {
-    const response = await fetch(`${API_BASE_URL}/donors`, {
-      method: 'POST',
+    // 1. Get current data
+    const currentData = await fetch(`${API_BASE_URL}/latest`, {
+      headers: { 'X-Master-Key': API_KEY }
+    }).then(res => res.json());
+    
+    // 2. Add new donor to the array
+    const updatedDonors = [
+      ...(currentData.record.donors || []),
+      {
+        ...donorData,
+        id: Date.now() // Generate unique ID
+      }
+    ];
+    
+    // 3. Update the entire bin
+    const response = await fetch(API_BASE_URL, {
+      method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
+        'X-Master-Key': API_KEY
       },
-      body: JSON.stringify(donorData),
+      body: JSON.stringify({
+        ...currentData.record,
+        donors: updatedDonors
+      })
     });
     
     if (!response.ok) {
@@ -43,6 +93,7 @@ async function createDonor(donorData) {
     throw error;
   }
 }
+
 
 // Form submission
 if (form) {
