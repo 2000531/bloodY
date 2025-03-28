@@ -1,5 +1,5 @@
 // API base URL - change this to your json-server URL
-const API_BASE_URL = 'http://localhost:3000';
+const API_BASE_URL = 'https://2000531.github.io/bloodY';
 
 // DOM Elements
 const universalSearchButton = document.getElementById('universal-search-button');
