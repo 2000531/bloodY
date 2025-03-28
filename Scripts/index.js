@@ -1,5 +1,7 @@
 // API base URL - change this to your json-server URL
-const API_BASE_URL = 'http://localhost:3000';
+const BIN_ID = '67e689e68a456b79667e534c';
+const API_KEY = '$2a$10$vvG4aV/MVldkC/BJks0nXufnzwRVo6546Suwy/jrN3FXuLfLwsWNq';
+const API_BASE_URL = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
 
 // Form validation and submission
 const form = document.getElementById('registration-form');
@@ -29,6 +31,7 @@ async function createDonor(donorData) {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        'X-Master-Key': API_KEY
       },
       body: JSON.stringify(donorData),
     });
