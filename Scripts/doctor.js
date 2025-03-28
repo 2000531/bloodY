@@ -1,5 +1,7 @@
 // API base URL - change this to your json-server URL
-const API_BASE_URL = 'http://localhost:3000';
+const BIN_ID = '67e689e68a456b79667e534c';
+const API_KEY = '$2a$10$vvG4aV/MVldkC/BJks0nXufnzwRVo6546Suwy/jrN3FXuLfLwsWNq';
+const API_BASE_URL = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
 
 // DOM Elements
 const universalSearchButton = document.getElementById('universal-search-button');
@@ -61,14 +63,19 @@ async function fetchDonors() {
     donorsTableBody.innerHTML = '';
     donorsTableBody.appendChild(tableLoadingIndicator);
     
-    const response = await fetch(`${API_BASE_URL}/donors`);
+    const response = await fetch(`${API_BASE_URL}/latest`, {
+      headers: {
+        'X-Master-Key': API_KEY
+      }
+    });
     
     if (!response.ok) {
       throw new Error(`HTTP error! Status: ${response.status}`);
     }
     
-    donors = await response.json();
-    filteredDonors = [...donors];
+    const { record } = await response.json();
+    donors = record.donors || [];
+    filteredDonors = donors;
     renderDonors(donors);
   } catch (error) {
     console.error('Error fetching donors:', error);
@@ -80,7 +87,11 @@ async function fetchDonors() {
 // Fetch a single donor by ID
 async function fetchDonorById(id) {
   try {
-    const response = await fetch(`${API_BASE_URL}/donors/${id}`);
+    const response = await fetch(`${API_BASE_URL}/latest/${id}`, {
+      headers: {
+        'X-Master-Key': API_KEY
+      }
+    });
     
     if (!response.ok) {
       throw new Error(`HTTP error! Status: ${response.status}`);
@@ -96,7 +107,11 @@ async function fetchDonorById(id) {
 // Fetch donors by blood type
 async function fetchDonorsByBloodType(bloodType) {
   try {
-    const response = await fetch(`${API_BASE_URL}/donors?bloodType=${bloodType}`);
+    const response = await fetch(`${API_BASE_URL}/latest?bloodType=${bloodType}`, {
+      headers: {
+        'X-Master-Key': API_KEY
+      }
+    });
     
     if (!response.ok) {
       throw new Error(`HTTP error! Status: ${response.status}`);
@@ -112,10 +127,11 @@ async function fetchDonorsByBloodType(bloodType) {
 // Create a new blood request
 async function createBloodRequest(requestData) {
   try {
-    const response = await fetch(`${API_BASE_URL}/bloodRequests`, {
+      const response = await fetch(`${API_BASE_URL}/latest`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        'X-Master-Key': API_KEY
       },
       body: JSON.stringify({
         ...requestData,
