@@ -1,5 +1,5 @@
 // API base URL - change this to your json-server URL
-const API_BASE_URL = 'https://2000531.github.io/bloodY';
+const API_BASE_URL = 'http://localhost:3000';
 
 // Form validation and submission
 const form = document.getElementById('registration-form');
